@@ -4,17 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "breakproof"
-version = "0.1.0"
+version = "0.1.1"
 description = "No-spec API break gate: FAIL only on removed contracts with caller proof"
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "MIT"}
+license = "MIT"
 authors = [{name = "AuditScan", email = "team@auditscan.sh"}]
 keywords = ["api", "breaking-changes", "contract-testing", "ci", "merge-gate"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
