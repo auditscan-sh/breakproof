@@ -73,6 +73,7 @@ def test_scan_path_sorts():
         contract = scan_path(tmp)
         assert [(e["method"], e["path"]) for e in contract["endpoints"]] == [
             ("DELETE", "/z"), ("GET", "/a")]
+        assert {e["service"] for e in contract["endpoints"]} == {"app"}
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
@@ -117,3 +118,14 @@ def test_cli_roundtrip():
                      "--head", os.path.join(tmp, "c.json")]) == 0
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+
+
+def test_examples_cover_three_languages():
+    import pathlib
+    root = pathlib.Path(__file__).resolve().parent.parent / "examples"
+    contract = scan_path(str(root))
+    by_service = {}
+    for e in contract["endpoints"]:
+        by_service.setdefault(e["service"], []).append((e["method"], e["path"]))
+    assert set(by_service) == {"python-api", "express-api", "go-api"}
+    assert len(contract["endpoints"]) == 8

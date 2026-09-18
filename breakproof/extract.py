@@ -44,8 +44,10 @@ _GO_GIN = re.compile(
 
 
 def _service_for(relpath: str) -> str:
-    head = (relpath or "").replace("\\", "/").split("/", 1)[0]
-    return head or "app"
+    rel = (relpath or "").replace("\\", "/")
+    if "/" not in rel:
+        return "app"
+    return rel.split("/", 1)[0] or "app"
 
 
 def _line_offsets(text: str) -> list:

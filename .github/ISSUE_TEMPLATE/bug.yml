@@ -1,0 +1,18 @@
+name: Bug report
+description: Something broke or behaved unexpectedly
+body:
+  - type: input
+    attributes:
+      label: Version
+      description: Output of `breakproof --version`
+  - type: textarea
+    attributes:
+      label: What you ran
+      placeholder: breakproof diff --base-dir ./main --head-dir ./pr
+  - type: textarea
+    attributes:
+      label: Expected vs actual
+  - type: textarea
+    attributes:
+      label: Endpoint count
+      description: Output of `breakproof scan` on the same directory

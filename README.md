@@ -1,6 +1,15 @@
 # Breakproof — merge without fear.
 
+[![ci](https://github.com/auditscan-sh/breakproof/actions/workflows/python-package.yml/badge.svg)](https://github.com/auditscan-sh/breakproof/actions)
+[![pypi](https://img.shields.io/pypi/v/breakproof)](https://pypi.org/p/breakproof/)
+![py](https://img.shields.io/pypi/pyversions/breakproof)
+![scans](https://img.shields.io/badge/scans-Python_%7C_JavaScript%2FTypeScript%7C_Go-blue)
+![deps](https://img.shields.io/badge/deps-zero-green)
+![license](https://img.shields.io/badge/license-MIT-lightgrey)
+
 Your PR deleted an endpoint someone still calls. Breakproof tells you before your users do. No OpenAPI spec, no config novel, no noise. Removed contracts fail. Everything else passes.
+
+![Breakproof catching a deleted endpoint](assets/demo.gif)
 
 ```bash
 pipx install breakproof
@@ -90,6 +99,15 @@ Posts the verdict to the run summary. Set `fail-on-breaking: "false"` for adviso
 ## Why not a spec diff?
 
 Spec tools need an `openapi.yaml` you have to write and keep honest, then flag everything including stuff nobody calls. Breakproof reads your code, freezes what it serves, and fails only on removals — plus new CVEs or secret sites if you hand it those lists as JSON. Nothing to maintain, nothing to triage, nothing to argue about in review.
+
+## Scans three languages out of the box
+
+Python, JavaScript/TypeScript, Go — see [examples/](examples/) (a Flask API, an Express API, a Go API). One command freezes all three into a single contract:
+
+```bash
+breakproof scan ./my-monorepo --out contract.json
+# endpoints=8 across python-api, express-api, go-api
+```
 
 ## Honest limits
 

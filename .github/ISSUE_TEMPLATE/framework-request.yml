@@ -1,0 +1,16 @@
+name: Framework request
+description: Teach Breakproof your framework's route patterns
+body:
+  - type: input
+    attributes:
+      label: Framework
+      placeholder: e.g. Django, NestJS, Rails, Axum
+  - type: textarea
+    attributes:
+      label: Real route snippet
+      description: Paste 3-5 lines showing how routes are registered
+      placeholder: e.g. path("users/", views.list_users)
+  - type: textarea
+    attributes:
+      label: Anything tricky
+      description: Dynamic prefixes, decorators with args, versioned routers?
