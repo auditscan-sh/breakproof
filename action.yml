@@ -1,0 +1,37 @@
+name: "Breakproof API gate"
+description: "FAIL the PR only on removed API contracts with caller proof. No OpenAPI spec needed."
+branding:
+  icon: "shield"
+  color: "green"
+inputs:
+  base-dir:
+    description: "Base directory to scan (default: checked-out base ref)."
+    required: "false"
+    default: ""
+  head-dir:
+    description: "Head directory to scan (default: current checkout)."
+    required: "false"
+    default: "."
+  base-contract:
+    description: "Base contract JSON file (alternative to base-dir)."
+    required: "false"
+    default: ""
+  head-contract:
+    description: "Head contract JSON file (alternative to head-dir)."
+    required: "false"
+    default: ""
+  fail-on-breaking:
+    description: "Exit 1 when breaking changes are found."
+    required: "false"
+    default: "true"
+runs:
+  using: "composite"
+  steps:
+    - run: |
+        python -m pip install --quiet breakproof
+        ARGS=""
+        if [ -n "${{ inputs.base-contract }}" ]; then ARGS="$ARGS --base ${{ inputs.base-contract }}"; elif [ -n "${{ inputs.base-dir }}" ]; then ARGS="$ARGS --base-dir ${{ inputs.base-dir }}"; fi
+        if [ -n "${{ inputs.head-contract }}" ]; then ARGS="$ARGS --head ${{ inputs.head-contract }}"; else ARGS="$ARGS --head-dir ${{ inputs.head-dir }}"; fi
+        if [ "${{ inputs.fail-on-breaking }}" = "true" ]; then breakproof diff $ARGS --markdown "$RUNNER_TEMP/breakproof.md"; else breakproof diff $ARGS --markdown "$RUNNER_TEMP/breakproof.md" || true; fi
+        cat "$RUNNER_TEMP/breakproof.md" >> "$GITHUB_STEP_SUMMARY"
+      shell: bash

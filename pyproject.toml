@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "breakproof"
+version = "0.1.0"
+description = "No-spec API break gate: FAIL only on removed contracts with caller proof"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "AuditScan", email = "team@auditscan.sh"}]
+keywords = ["api", "breaking-changes", "contract-testing", "ci", "merge-gate"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+]
+dependencies = []
+
+[project.optional-dependencies]
+test = ["pytest>=7.4"]
+
+[project.scripts]
+breakproof = "breakproof.cli:main"
+
+[project.urls]
+Homepage = "https://auditscan.sh"
+Repository = "https://github.com/auditscan-sh/breakproof"
+Issues = "https://github.com/auditscan-sh/breakproof/issues"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["breakproof*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
