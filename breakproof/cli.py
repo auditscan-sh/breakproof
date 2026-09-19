@@ -9,6 +9,7 @@ import argparse
 import json
 import os
 import sys
+import tempfile
 
 from breakproof import __version__
 from breakproof.extract import scan_path
@@ -46,6 +47,8 @@ def _load_contract(source: str) -> dict:
     except (OSError, ValueError) as exc:
         raise ValueError(f"bad contract JSON: {exc}") from exc
     if not isinstance(data, dict) or not isinstance(data.get("endpoints"), list):
+        print(f"breakproof: invalid contract in {source}, treating as empty",
+              file=sys.stderr)
         return {"endpoints": [], "edges": []}
     edges = data.get("edges") if isinstance(data.get("edges"), list) else []
     return {"endpoints": data["endpoints"], "edges": edges}
@@ -55,8 +58,15 @@ def _write_file(path: str, content: str) -> None:
     """Write exactly one file the user named. Nothing else. Ever."""
     parent = os.path.dirname(os.path.abspath(path))
     os.makedirs(parent, exist_ok=True)
-    with open(path, "w", encoding="utf-8") as fh:
+    fd, tmp = tempfile.mkstemp(prefix=".breakproof-", suffix=".tmp", dir=parent)
+    with os.fdopen(fd, "w", encoding="utf-8") as fh:
         fh.write(content)
+        fh.flush()
+        try:
+            os.fsync(fh.fileno())
+        except OSError:
+            pass
+    os.replace(tmp, path)
 
 
 def _cmd_scan(args) -> int:
@@ -97,16 +107,22 @@ def _cmd_diff(args) -> int:
     gate = build_gate(base, head, base_ref=args.base_ref or "",
                       head_ref=args.head_ref or "")
     md = render_gate_markdown(gate)
-    try:
-        if args.markdown:
+    if args.markdown:
+        try:
             _write_file(args.markdown, md + "\n")
-        else:
-            print(md)
-    except (OSError, BrokenPipeError) as exc:
-        if isinstance(exc, BrokenPipeError):
+        except OSError as exc:
+            print(f"breakproof: cannot write {args.markdown}: {exc}", file=sys.stderr)
+            return 2
+    if args.format == "json":
+        try:
+            print(json.dumps(gate, indent=2, sort_keys=True))
+        except BrokenPipeError:
             return 0
-        print(f"breakproof: cannot write {args.markdown}: {exc}", file=sys.stderr)
-        return 2
+    elif not args.markdown:
+        try:
+            print(md)
+        except BrokenPipeError:
+            return 0
     if args.out_gate:
         try:
             _write_file(args.out_gate,
@@ -151,6 +167,8 @@ def build_parser() -> argparse.ArgumentParser:
     d.add_argument("--out-gate", default="")
     d.add_argument("--markdown", default="")
     d.add_argument("--radar-markdown", default="")
+    d.add_argument("--format", default="markdown", choices=("markdown", "json"),
+                   help="Stdout format. Files set by --markdown/--out-gate are unchanged.")
     d.set_defaults(func=_cmd_diff)
     return p
 

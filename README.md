@@ -44,6 +44,9 @@ breakproof diff --base-dir ./main --head-dir ./pr
 # Save the receipts instead of printing them
 breakproof diff --base base.json --head head.json \
   --out-gate gate.json --markdown gate.md --radar-markdown radar.md
+
+# Machine-readable stdout for pipes (default is markdown)
+breakproof diff --base base.json --head head.json --format json | jq .verdict
 ```
 
 Exit codes: `0` pass, `1` fail (something vanished), `2` you invoked it wrong.

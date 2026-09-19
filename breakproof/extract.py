@@ -18,7 +18,7 @@ MAX_PATH_LEN = 2048
 
 SCAN_EXTS = (".py", ".js", ".jsx", ".ts", ".tsx", ".go")
 SKIP_DIRS = frozenset({
-    ".git", "node_modules", "dist", "build", "__pycache__",
+    ".git", ".hg", ".svn", ".idea", "node_modules", "dist", "build", "__pycache__",
     ".venv", "venv", ".tox", "vendor",
 })
 
